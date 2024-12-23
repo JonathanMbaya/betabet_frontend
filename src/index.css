@@ -1,0 +1,39 @@
+/* Applique une typographie globale et normalise les styles par défaut */
+body, * {
+    font-family: 'Josefin Sans', serif !important;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Corps de la page */
+body {
+    background-color: #f5f5f5; /* Couleur de fond douce */
+    color: #333; /* Couleur de texte par défaut */
+    line-height: 1.6; /* Meilleure lisibilité */
+}
+
+/* Liens */
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Boutons */
+button {
+    font-family: inherit; /* Maintenir la typographie globale */
+    cursor: pointer;
+    border: none;
+    background: none;
+}
+
+/* Images */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
