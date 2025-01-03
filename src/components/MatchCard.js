@@ -1,63 +1,55 @@
 import React from 'react';
 
-const MatchCard = ({ match, onBet, showDetails }) => {
-  const { homeTeam, awayTeam, time, competition, score, odds } = match;
+const MatchCard = ({ match }) => {
+  const {
+    homeTeam,
+    awayTeam,
+    homeLogo,
+    awayLogo,
+    score,
+    date,
+    time,
+    stadium,
+    goalscorers,
+  } = match;
 
   return (
     <div style={styles.card}>
-      <div style={styles.header}>
-        <span style={styles.timeCompetition}>
-          {time} | {competition}
-        </span>
+
+      <p style={{textAlign: 'center', color: 'white'}}>Date: {date} | Heure: {time} <br/> Stade: {stadium || 'Non spécifié'}</p>
+      <div style={styles.team}>
+        <table style={styles.table}>
+          <thead>
+            <tr style={styles.tr} >
+              <th style={styles.thlogo}><img src={homeLogo} alt={`${homeTeam} logo`} style={styles.logo}/> <br/> {homeTeam}</th>
+              <th style={styles.thlogo}>{score}</th>
+              <th style={styles.thlogo}><img src={awayLogo} alt={`${awayTeam} logo`} style={styles.logo}/> <br/> {awayTeam}</th>
+            </tr>
+          </thead>
+        </table>
       </div>
 
-      <div style={styles.teams}>
-        <div style={styles.team}>{homeTeam}</div>
-        <div style={styles.score}>{score ? score : '-'}</div>
-        <div style={styles.team}>{awayTeam}</div>
+      <div style={styles.oddspanel}>
+        <button style={styles.button}>{homeTeam} +3</button>
+        <button style={styles.button}>Match nul +1</button>
+        <button style={styles.button}>{awayTeam} +3</button>
       </div>
-
-      {score && (
-        <div style={styles.buttons}>
-          <button
-            style={styles.button}
-            onClick={() => onBet('home')}
-            aria-label={`Parier sur ${homeTeam}`}
-          >
-            <p style={{fontSize: '10px'}}>{homeTeam}</p> 
-            <br></br>
-            {odds.home}
-          </button>
-          <button
-            style={styles.button}
-            onClick={() => onBet('draw')}
-            aria-label="Parier sur Match Nul"
-          >
-            <p style={{fontSize: '10px'}}>Match nul</p> 
-            <br></br>
-            {odds.draw}
-          </button>
-          <button
-            style={styles.button}
-            onClick={() => onBet('away')}
-            aria-label={`Parier sur ${awayTeam}`}
-          >
-            <p style={{fontSize: '10px'}}>{awayTeam}</p> 
-            <br></br>
-            {odds.away}
-          </button>
-        </div>
-      )}
 
       <div style={styles.details}>
-        <button
-          style={styles.button}
-          onClick={showDetails}
-          type="button"
-          aria-label="Voir les détails du match"
-        >
-          Voir détails du match
-        </button>
+          <table style={styles.table}>
+            <tbody>
+              {goalscorers.map((scorer, index) => (
+                <tr key={index}>
+                  <td style={styles.td}>
+                    {scorer.home_scorer || ""}
+                  </td>
+                  <td style={styles.td}>
+                    {scorer.away_scorer || ""}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
       </div>
     </div>
   );
@@ -66,74 +58,98 @@ const MatchCard = ({ match, onBet, showDetails }) => {
 const styles = {
   card: {
     border: '1px solid #ddd',
-    borderRadius: '8px',
+    borderRadius: '2rem',
     padding: '16px',
     margin: '10px 0',
     backgroundColor: '#6B8E23',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
     fontFamily: 'Arial, sans-serif',
-    transition: 'transform 0.2s, box-shadow 0.2s',
-  },
-  cardHover: {
-    transform: 'scale(1.02)',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+    boxShadow: '0 -2px 5px rgba(0, 0, 0, 0.1)',
+
   },
   header: {
-    marginBottom: '8px',
-    fontSize: '12px',
-    color: '#fff',
-    textAlign: 'center',
-  },
-  timeCompetition: {
-    display: 'block',
-  },
-  teams: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: '16px',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    backgroundColor: '#fff',
-    padding: '.5rem',
-    borderRadius: '1rem',
-  },
-  team: {
-    flex: 1,
-    textAlign: 'center',
-  },
-  score: {
-    flex: 1,
-    textAlign: 'center',
-    fontSize: '20px',
-    fontWeight: 'bold',
-  },
-  buttons: {
     display: 'flex',
     justifyContent: 'space-around',
-    marginTop: '10px',
+    alignItems: 'center',
+    marginBottom: '16px',
   },
-  button: {
+  team: {
+    textAlign: 'center',
+  },
+  logo: {
+    width: '50px',
+    height: '50px',
+    borderRadius: '50%',
+    marginBottom: '8px',
+  },
+  score: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  details: {
+    marginTop: '12px',
+  },
+  table: {
+    width: '100%',
+    borderCollapse: 'collapse',
+    marginTop: '10px',
+
+  },
+  th: {
+    display:'flex',
+    justifyContent: 'center',
+    alignItems:'center',
+    padding: '10px',
+    border: 'none',
+    fontWeight: 'bold',
+    width: '50px',
+  },
+  thlogo: {
+    display:'flex',
+    flexDirection:'column',
+    justifyContent: 'center',
+    alignItems:'center',
+    padding: '10px',
+    border: 'none',
+    fontWeight: 'bold',
+    maxWidth: '100px',
+  },
+  thscore : {
+    maxWidth: '20%'
+  },
+  tr: {
+    backgroundColor: '#F3F3F3',
+    borderRadius: '1rem',
+    marginBottom: '10px',
+    border: 'none',
+    display: 'flex',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    boxShadow: '0 -2px 5px rgba(0, 0, 0, 0.1)',
+    color: 'white !important',
+  },
+  td: {
     padding: '10px 20px',
+    borderLeft: '.5px solid #ddd',
+    textAlign: 'left',
+    width:'50%',
+    color: 'white',
+  },
+  oddspanel:{
+    display:'flex',
+    justifyContent: 'space-around',
+    alignItems: 'center'
+  },
+  button:{
+    padding: '10px 15px',
     backgroundColor: '#228B22',
     color: '#fff',
     border: 'none',
-    borderRadius: '4px',
+    borderRadius: '.5rem',
     cursor: 'pointer',
-    fontSize: '14px',
-    transition: 'background-color 0.3s, transform 0.2s',
-  },
-  buttonHover: {
-    backgroundColor: '#0056b3',
-    transform: 'scale(1.05)',
-  },
-  details: {
-    textAlign: 'center',
-    marginTop: '12px',
-  },
-  detailsButtonHover: {
-    color: '#0056b3',
-  },
+    marginTop: '.5rem',
+    fontSize:'12px' 
+  }
 };
 
 export default MatchCard;

@@ -13,6 +13,10 @@ body {
     line-height: 1.6; /* Meilleure lisibilité */
 }
 
+h1{
+    color: #6B8E23 !important;
+}
+
 /* Liens */
 a {
     text-decoration: none;
@@ -37,3 +41,4 @@ img {
     height: auto;
     display: block;
 }
+

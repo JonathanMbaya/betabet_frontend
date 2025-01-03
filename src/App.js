@@ -9,6 +9,7 @@ import Matches from './pages/Matches';
 import Friends from './pages/Friends';
 import Profile from './pages/Profile';
 import { AuthProvider } from './contexts/AuthContext';
+import Standings from './components/Standings';
 
 const theme = createTheme({
   palette: {
@@ -42,6 +43,7 @@ function App() {
         <Router>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/standings" element={<Standings/>} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/matches" element={<Matches />} />
