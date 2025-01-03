@@ -38,7 +38,7 @@ const MatchCard = ({ match }) => {
       <div style={styles.details}>
           <table style={styles.table}>
             <tbody>
-              {goalscorers.map((scorer, index) => (
+              {goalscorers && goalscorers.map((scorer, index) => (
                 <tr key={index}>
                   <td style={styles.td}>
                     {scorer.home_scorer || ""}

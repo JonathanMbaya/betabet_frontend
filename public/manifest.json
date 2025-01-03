@@ -1,0 +1,9 @@
+{
+    "short_name": "Betabet",
+    "name": "Betabet",
+    "start_url": ".",
+    "display": "standalone",
+    "theme_color": "#45260d",
+    "background_color": "#ffffff"
+}
+  
