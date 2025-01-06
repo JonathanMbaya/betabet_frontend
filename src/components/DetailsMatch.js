@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { useParams, Link} from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
 import Navbar from './Navbar';
 
 function DetailsMatch() {
@@ -49,108 +51,167 @@ function DetailsMatch() {
     return <p>Aucun détail disponible pour ce match.</p>;
   }
 
+  const renderLineup = (lineup) => {
+    return lineup.map((player, index) => (
+      <li key={index}>{player.player_number} {player.player}</li> // Affiche le nom du joueur
+    ));
+  };
+
   return (
     <>
-        <Navbar/>
-        <main style={styles.container}>
-            <div style={styles.card}>
-                <p style={{textAlign: 'center', color: 'white'}}>Date: {matchDetails.event_date} | Heure: {matchDetails.event_time} 
-                    <br/> Stade: {matchDetails.event_stadium || 'Non spécifié'}
-                    <br/> Compétition : {matchDetails.league_name}
-                </p>
-                <div style={styles.team}>
-                    <table style={styles.table}>
-                    <thead>
-                        <tr style={styles.tr} >
-                        <th style={styles.thlogo}><img src={matchDetails.home_team_logo} alt={`${matchDetails.event_home_team} logo`} style={styles.logo}/> <br/> {matchDetails.event_home_team}</th>
-                        <th style={styles.thlogo}>{matchDetails.event_final_result}</th>
-                        <th style={styles.thlogo}><img src={matchDetails.away_team_logo} alt={`${matchDetails.event_away_team} logo`} style={styles.logo}/> <br/> {matchDetails.event_away_team}</th>
-                        </tr>
-                    </thead>
-                    </table>
-                </div>
+      <Navbar />
+      <main style={styles.container}>
+        <Link to="/">
+          <div style={styles.arrowReturn}>
+            <FontAwesomeIcon icon={faChevronLeft} />
+          </div>
+        </Link>
 
-                <div style={styles.details}>
-                    <table style={styles.table}>
-                        <tbody>
-                        {matchDetails.goalscorers && matchDetails.goalscorers.map((scorer, index) => (
-                            <tr key={index}>
-                            <td style={styles.td}>
-                                {scorer.time}' {scorer.home_scorer || ""}
-                            </td>
-                            <td style={styles.td}>
-                                {scorer.away_scorer || ""}
-                            </td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                </div>
+        <div style={styles.card}>
+          <p style={{ textAlign: 'center', color: 'white' }}>
+            Date: {matchDetails.event_date} | Heure: {matchDetails.event_time}
+            <br /> Stade: {matchDetails.event_stadium || 'Non spécifié'}
+            <br /> Compétition : {matchDetails.league_name}
+          </p>
+          <div style={styles.team}>
+            <table style={styles.table}>
+              <tr style={styles.tr}>
+                <td style={styles.thlogo}>
+                  <img
+                    src={matchDetails.home_team_logo}
+                    alt={matchDetails.event_home_team}
+                    style={styles.logo}
+                  />
+                  <br /> {matchDetails.event_home_team}
+                </td>
+                <td style={styles.thlogo}>{matchDetails.event_final_result}</td>
+                <td style={styles.thlogo}>
+                  <img
+                    src={matchDetails.away_team_logo}
+                    alt={matchDetails.event_away_team}
+                    style={styles.logo}
+                  />
+                  <br /> {matchDetails.event_away_team}
+                </td>
+              </tr>
+            </table>
+          </div>
 
-            </div>
+          <div style={styles.details}>
+            <table style={styles.table}>
+              <tbody>
+                {matchDetails.goalscorers &&
+                  matchDetails.goalscorers.map((scorer, index) => (
+                    <tr key={index}>
+                      <td style={styles.td}>
+                        {scorer.time}' {scorer.home_scorer || ''}
+                      </td>
+                      <td style={styles.td}>{scorer.away_scorer || ''}</td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
 
-            <div style={styles.card}>
-                {/* Onglets */}
-                <div style={styles.tabs}>
-                    <p 
-                    style={activeTab === 'statistics' ? styles.activeTab : styles.tab} 
-                    onClick={() => setActiveTab('statistics')}
-                    >
-                    Statistiques
-                    </p>
-                    <p 
-                    style={activeTab === 'players' ? styles.activeTab : styles.tab} 
-                    onClick={() => setActiveTab('players')}
-                    >
-                    Joueurs
-                    </p>
-                </div>
+        <div style={styles.card}>
+          {/* Onglets */}
+          <div style={styles.tabs}>
+            <p
+              style={activeTab === 'statistics' ? styles.activeTab : styles.tab}
+              onClick={() => setActiveTab('statistics')}
+            >
+              Statistiques
+            </p>
+            <p
+              style={activeTab === 'players' ? styles.activeTab : styles.tab}
+              onClick={() => setActiveTab('players')}
+            >
+              Formation
+            </p>
+          </div>
 
-                {/* Contenu des onglets */}
-                <div style={styles.tabContent}>
-                    {activeTab === 'statistics' && (
-                    <div>
-                        <table>
-                            {matchDetails.statistics && matchDetails.statistics.map((stat, index) => (
-                                <tr style={styles.dataStat}>
-                                    <td style={styles.dataStat}>{stat.home}</td>
-                                    <td style={styles.dataStat}>{stat.type}</td>
-                                    <td style={styles.dataStat}>{stat.away}</td>
-                                </tr> 
-                            ))}
-                        </table>
+          {/* Contenu des onglets */}
+          <div style={styles.tabContent}>
+            {activeTab === 'statistics' && (
+              <div>
+                <table style={styles.table}>
+                  <tbody>
+                    {matchDetails.statistics &&
+                      matchDetails.statistics.map((stat, index) => {
+                        const homeValue = parseInt(stat.home) || 0;
+                        const awayValue = parseInt(stat.away) || 0;
+                        const homeStyle = homeValue > awayValue ? styles.highlight : {};
+                        const awayStyle = awayValue > homeValue ? styles.highlight : {};
 
-                    </div>
-                    )}
+                        return (
+                          <tr key={index} style={styles.dataStat}>
+                            <td style={{ ...styles.dataStat, ...homeStyle }}>{stat.home}</td>
+                            <td style={styles.dataStat}>{stat.type}</td>
+                            <td style={{ ...styles.dataStat, ...awayStyle }}>{stat.away}</td>
+                          </tr>
+                        );
+                      })}
+                  </tbody>
+                </table>
+              </div>
+            )}
 
-                    {activeTab === 'players' && (
-                    <div>
-                        <h3>Liste des joueurs</h3>
+            {activeTab === 'players' && (
+              <div style={{color: 'white'}}>
+                <table style={styles.table}>
+                    <tr>
+                      <td style={styles.td}>
+                        <h4>Domicile</h4><br></br>
                         <ul>
-                        {matchDetails.players.map((player, index) => (
-                            <li key={index}>{player}</li>
-                        ))}
+                          {renderLineup(matchDetails.lineups.home_team.starting_lineups)}
                         </ul>
-                        <h3>Formation</h3>
-                        <tr>
-                            <td>{matchDetails.event_home_formation}</td>
-                            <td>{matchDetails.event_away_formation}</td>
-                        </tr>
-                    </div>
-                    )}
-                </div>
-            </div>
+                      </td>
+                      <td style={styles.td}>
+                        <h4>Extérieur</h4><br></br>
+                        <ul>
+                          {renderLineup(matchDetails.lineups.away_team.starting_lineups)}
+                        </ul>
+                      </td>
+                    </tr>
+                </table>
 
-
-
-        </main>
+                <table style={styles.table}>
+                    <tr>
+                      <td style={styles.td}>
+                        <h4>Remplaçants</h4><br></br>
+                        <ul>
+                          {renderLineup(matchDetails.lineups.home_team.substitutes)}
+                        </ul>
+                      </td>
+                      <td style={styles.td}>
+                        <h4>Remplaçants</h4><br></br>
+                        <ul>
+                          {renderLineup(matchDetails.lineups.away_team.substitutes)}
+                        </ul>
+                      </td>
+                    </tr>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      </main>
     </>
-
   );
 }
 
 const styles = {
-
+  arrowReturn: {
+    height: '50px',
+    width: '50px',
+    borderRadius: '5rem',
+    backgroundColor: '#6B8E23',
+    color: 'white',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
   container: {
     padding: '20px',
     margin: '4rem auto',
@@ -161,12 +222,11 @@ const styles = {
   card: {
     border: '1px solid #ddd',
     borderRadius: '2rem',
-    padding: '16px',
+    padding: '14px',
     margin: '10px 0',
     backgroundColor: '#6B8E23',
     fontFamily: 'Arial, sans-serif',
     boxShadow: '0 -2px 5px rgba(0, 0, 0, 0.1)',
-
   },
   team: {
     textAlign: 'center',
@@ -189,69 +249,41 @@ const styles = {
     width: '100%',
     borderCollapse: 'collapse',
     marginTop: '10px',
-
   },
   th: {
-    display:'flex',
+    display: 'flex',
     justifyContent: 'center',
-    alignItems:'center',
+    alignItems: 'center',
     padding: '10px',
     border: 'none',
     fontWeight: 'bold',
     width: '50px',
   },
   thlogo: {
-    display:'flex',
-    flexDirection:'column',
+    display: 'flex',
+    flexDirection: 'column',
     justifyContent: 'center',
-    alignItems:'center',
+    alignItems: 'center',
     padding: '10px',
     border: 'none',
     fontWeight: 'bold',
     maxWidth: '100px',
   },
-  thscore : {
-    maxWidth: '20%'
-  },
-  tr: {
-    backgroundColor: '#F3F3F3',
-    borderRadius: '1rem',
-    marginBottom: '10px',
-    border: 'none',
-    display: 'flex',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    boxShadow: '0 -2px 5px rgba(0, 0, 0, 0.1)',
-    color: 'white !important',
-  },
   td: {
-    padding: '10px 20px',
+    padding: '10px 10px',
     borderLeft: '.5px solid #ddd',
     textAlign: 'left',
-    width:'50%',
+    width: '50%',
     color: 'white',
   },
-
-  dataStat : {
+  dataStat: {
     textAlign: 'center',
     color: 'white',
   },
-
-  oddspanel:{
-    display:'flex',
-    justifyContent: 'space-around',
-    alignItems: 'center'
-  },
-
-  button:{
-    padding: '10px 15px',
-    backgroundColor: '#228B22',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '.5rem',
-    cursor: 'pointer',
-    marginTop: '.5rem',
-    fontSize:'12px' 
+  highlight: {
+    color: 'yellow',
+    fontWeight: 'bold',
+    fontSize: '1.2rem',
   },
   tabs: {
     display: 'flex',
@@ -269,11 +301,23 @@ const styles = {
     padding: '10px 20px',
     cursor: 'pointer',
     fontWeight: 'bold',
-    color: '#000',
-    borderBottom: '2px solid #228B22',
+    backgroundColor: '#228B22',
+    width: '50%',
+    color: 'white',
   },
   tabContent: {
     padding: '10px 0',
+  },
+  tr: {
+    backgroundColor: '#F3F3F3',
+    borderRadius: '1rem',
+    marginBottom: '10px',
+    border: 'none',
+    display: 'flex',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    boxShadow: '0 -2px 5px rgba(0, 0, 0, 0.1)',
+    color: 'white !important',
   },
 };
 

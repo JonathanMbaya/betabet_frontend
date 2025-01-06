@@ -46,3 +46,7 @@ table {
     width: 100%;
 }
 
+li {
+    list-style-type: none;
+    text-decoration: none;
+}
