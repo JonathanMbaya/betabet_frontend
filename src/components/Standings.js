@@ -93,7 +93,7 @@ const Standings = () => {
       ) : standings.length > 0 ? (
         <table style={styles.table}>
           <thead>
-            <tr>
+            <tr style={styles.tr}>
               <th style={styles.nameTeam}>Pos.</th>
               <th style={styles.nameTeam}>Équipe</th>
               <th>J</th>
@@ -108,7 +108,7 @@ const Standings = () => {
           </thead>
           <tbody>
             {standings.map((team) => (
-              <tr key={team.team_key}>
+              <tr style={styles.tr} key={team.team_key}>
                 <td style={styles.nameTeam}>{team.standing_place}</td>
                 <td>
                   {team.standing_team}
@@ -224,6 +224,10 @@ const styles = {
 
   nameTeam: {
     maxWidth: '30px'
+  },
+
+  tr : {
+    borderBottom: '.5px solid gray'
   }
 };
 

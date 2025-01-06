@@ -1,7 +1,12 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const MatchCard = ({ match }) => {
+
+  const navigate = useNavigate();
+
   const {
+    id,
     homeTeam,
     awayTeam,
     homeLogo,
@@ -13,8 +18,13 @@ const MatchCard = ({ match }) => {
     goalscorers,
   } = match;
 
+
+  const handleClick = () => {
+    navigate(`/match/${id}`); // Redirige vers l'URL du match
+  };
+
   return (
-    <div style={styles.card}>
+    <div onClick={handleClick} style={styles.card}>
 
       <p style={{textAlign: 'center', color: 'white'}}>Date: {date} | Heure: {time} <br/> Stade: {stadium || 'Non spécifié'}</p>
       <div style={styles.team}>
@@ -41,7 +51,7 @@ const MatchCard = ({ match }) => {
               {goalscorers && goalscorers.map((scorer, index) => (
                 <tr key={index}>
                   <td style={styles.td}>
-                    {scorer.home_scorer || ""}
+                    {scorer.time}' {scorer.home_scorer || ""}
                   </td>
                   <td style={styles.td}>
                     {scorer.away_scorer || ""}

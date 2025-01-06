@@ -44,7 +44,6 @@ const Navbar = ({ score, onProfileClick }) => {
         <hr style={styles.divider} />
         <ul style={styles.menuList}>
           <li>Mon profil</li>
-          <li>Mes paris</li>
           <li>Liste d'Amis</li>
           <li>Règles</li>
           <li>A propos de Betabet</li>

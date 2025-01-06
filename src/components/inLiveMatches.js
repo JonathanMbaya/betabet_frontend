@@ -3,91 +3,64 @@ import axios from 'axios';
 import MatchCard from './MatchCard';
 
 function InLiveMatches() {
-  const fakeMatch = {
-    event_home_team: 'Equipe Fictive Domicile',
-    event_away_team: 'Equipe Fictive Extérieur',
-    home_team_logo: 'https://via.placeholder.com/50',
-    away_team_logo: 'https://via.placeholder.com/50',
-    event_final_result: '0 - 0',
-    event_date: '2024-12-25',
-    event_time: '00:00',
-    event_stadium: 'Stade Imaginaire',
-    goalscorers: [],
-  };
-
+  const API_KEY = 'd73d6c9f857db59eea4511d3aa55ec9f200f581f24ba5086dc0b54a1c0dc2239';
   const [liveMatches, setLiveMatches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const fetchScores = async () => {
+    try {
+      const response = await axios.get('https://apiv2.allsportsapi.com/football/', {
+        params: {
+          met: 'Livescore',
+          APIkey: API_KEY,
+        },
+      });
+      setLiveMatches(response.data.result || []);
+      setLoading(false);
+    } catch (err) {
+      setError('Erreur lors de la récupération des scores.');
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchMatches = async () => {
-      const API_ALL_SPORT_DATA = process.env.REACT_APP_API_ALL_SPORT_DATA;
-
-      const options = {
-        method: 'GET',
-        url: `https://apiv2.allsportsapi.com/football/?met=Livescore&APIkey=${API_ALL_SPORT_DATA}`,
-      };
-
-      try {
-        const response = await axios.request(options);
-        console.log('API Response:', response.data);
-        setLiveMatches(response.data.result || []); // Extrayez les résultats
-      } catch (error) {
-        setError('Impossible de récupérer les matchs en direct.');
-        console.error('Erreur API:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMatches();
+    fetchScores();
+    const interval = setInterval(fetchScores, 10000); // Actualisation toutes les 10 secondes
+    return () => clearInterval(interval); // Nettoyage de l’intervalle à la fin
   }, []);
 
   return (
-    <>
-      <main style={styles.container}>
-        <h1 style={styles.title}>En Direct</h1>
-        <section style={styles.matches}>
-          {loading ? (
-            <p style={styles.noMatches}>Chargement des matchs...</p>
-          ) : error ? (
-            <p style={styles.noMatches}>{error}</p>
-          ) : liveMatches.length > 0 ? (
-            liveMatches.map((match) => (
-              <MatchCard
-                key={match.event_key}
-                match={{
-                  homeTeam: match.event_home_team,
-                  awayTeam: match.event_away_team,
-                  homeLogo: match.home_team_logo,
-                  awayLogo: match.away_team_logo,
-                  score: match.event_final_result,
-                  date: match.event_date,
-                  time: match.event_time,
-                  stadium: match.event_stadium,
-                  goalscorers: match.goalscorers,
-                }}
-              />
-            ))
-          ) : (
+    <main style={styles.container}>
+      <h1 style={styles.title}>En Direct</h1>
+      <section style={styles.matches}>
+        {loading ? (
+          <p style={styles.noMatches}>Chargement des matchs...</p>
+        ) : error ? (
+          <p style={styles.noMatches}>{error}</p>
+        ) : liveMatches.length > 0 ? (
+          liveMatches.map((match, index) => (
             <MatchCard
-              key="fakeMatch"
+              key={index}
               match={{
-                homeTeam: fakeMatch.event_home_team,
-                awayTeam: fakeMatch.event_away_team,
-                homeLogo: fakeMatch.home_team_logo,
-                awayLogo: fakeMatch.away_team_logo,
-                score: fakeMatch.event_final_result,
-                date: fakeMatch.event_date,
-                time: fakeMatch.event_time,
-                stadium: fakeMatch.event_stadium,
-                goalscorers: fakeMatch.goalscorers,
+                id: match.event_key,
+                homeTeam: match.event_home_team,
+                awayTeam: match.event_away_team,
+                homeLogo: match.home_team_logo,
+                awayLogo: match.away_team_logo,
+                score: match.event_final_result,
+                date: match.event_date,
+                time: match.event_time,
+                stadium: match.event_stadium,
+                goalscorers: match.goalscorers,
               }}
             />
-          )}
-        </section>
-      </main>
-    </>
+          ))
+        ) : (
+          <p style={styles.noMatches}>Aucun match en direct pour le moment.</p>
+        )}
+      </section>
+    </main>
   );
 }
 

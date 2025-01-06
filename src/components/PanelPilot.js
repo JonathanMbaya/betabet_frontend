@@ -19,7 +19,10 @@ function PanelPilot({ activeTab, onTabChange }) {
           <FontAwesomeIcon icon={faTable} style={styles.icon} />
         </button>
 
-        <button style={styles.navButton}>
+        <button
+          style={activeTab === 'basket' ? styles.activeButton : styles.navButton}
+          onClick={() => onTabChange('basket')}
+        >
           <FontAwesomeIcon icon={faTicket} style={styles.icon} />
         </button>
       </div>

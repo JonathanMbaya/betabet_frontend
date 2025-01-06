@@ -5,11 +5,10 @@ import LoadingScreen from './components/LoadingScreen';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Matches from './pages/Matches';
 import Friends from './pages/Friends';
 import Profile from './pages/Profile';
 import { AuthProvider } from './contexts/AuthContext';
-import Standings from './components/Standings';
+import DetailsMatch from './components/DetailsMatch';
 
 const theme = createTheme({
   palette: {
@@ -42,11 +41,10 @@ function App() {
       <AuthProvider>
         <Router>
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/standings" element={<Standings/>} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/matches" element={<Matches />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/match/:id" element={<DetailsMatch />}/>
             <Route path="/friends" element={<Friends />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="*" element={<Navigate to="/" replace />} />

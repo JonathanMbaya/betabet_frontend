@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar';
 import PanelPilot from '../components/PanelPilot';
 import InLiveMatches from '../components/inLiveMatches';
 import Standings from '../components/Standings';
+import BasketBets from '../components/BasketBets';
 
 const Home = () => {
   const [activeTab, setActiveTab] = useState('inLiveMatches'); // Onglet actif
@@ -13,6 +14,8 @@ const Home = () => {
         return <InLiveMatches />;
       case 'standings':
         return <Standings />;
+      case 'basket':
+        return <BasketBets/>;
       default:
         return <InLiveMatches />;
     }
