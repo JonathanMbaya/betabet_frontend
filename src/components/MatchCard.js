@@ -31,36 +31,20 @@ const MatchCard = ({ match }) => {
         <table style={styles.table}>
           <thead>
             <tr style={styles.tr} >
-              <th style={styles.thlogo}><img src={homeLogo} alt={`${homeTeam} logo`} style={styles.logo}/> <br/> {homeTeam}</th>
+              <th style={styles.thlogo}>{homeTeam} <img src={homeLogo} alt={`${homeTeam} logo`} style={styles.logo}/></th>
               <th style={styles.thlogo}>{score}</th>
-              <th style={styles.thlogo}><img src={awayLogo} alt={`${awayTeam} logo`} style={styles.logo}/> <br/> {awayTeam}</th>
+              <th style={styles.thlogo}><img src={awayLogo} alt={`${awayTeam} logo`} style={styles.logo}/> {awayTeam}</th>
             </tr>
           </thead>
         </table>
       </div>
 
       <div style={styles.oddspanel}>
-        <button style={styles.button}>{homeTeam} +3</button>
+        <button style={styles.button}>+3</button>
         <button style={styles.button}>Match nul +1</button>
-        <button style={styles.button}>{awayTeam} +3</button>
+        <button style={styles.button}>+3</button>
       </div>
 
-      <div style={styles.details}>
-          <table style={styles.table}>
-            <tbody>
-              {goalscorers && goalscorers.map((scorer, index) => (
-                <tr key={index}>
-                  <td style={styles.td}>
-                    {scorer.time}' {scorer.home_scorer || ""}
-                  </td>
-                  <td style={styles.td}>
-                    {scorer.away_scorer || ""}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-      </div>
     </div>
   );
 };
@@ -86,8 +70,8 @@ const styles = {
     textAlign: 'center',
   },
   logo: {
-    width: '50px',
-    height: '50px',
+    width: '30px',
+    height: '30px',
     borderRadius: '50%',
     marginBottom: '8px',
   },
@@ -112,17 +96,16 @@ const styles = {
     padding: '10px',
     border: 'none',
     fontWeight: 'bold',
-    width: '50px',
+    width: '70px',
   },
   thlogo: {
     display:'flex',
-    flexDirection:'column',
     justifyContent: 'center',
     alignItems:'center',
     padding: '10px',
     border: 'none',
-    fontWeight: 'bold',
     maxWidth: '100px',
+    fontSize: '12px'
   },
   thscore : {
     maxWidth: '20%'
@@ -152,8 +135,8 @@ const styles = {
   },
   button:{
     padding: '10px 15px',
-    backgroundColor: '#228B22',
-    color: '#fff',
+    backgroundColor: 'white',
+    color: '#228B22',
     border: 'none',
     borderRadius: '.5rem',
     cursor: 'pointer',

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWallet } from '@fortawesome/free-solid-svg-icons';
+import { useAuth } from '../contexts/AuthContext';
 
 const Navbar = ({ score, onProfileClick }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const {logout} = useAuth();
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
@@ -43,10 +45,11 @@ const Navbar = ({ score, onProfileClick }) => {
         </div>
         <hr style={styles.divider} />
         <ul style={styles.menuList}>
-          <li>Mon profil</li>
-          <li>Liste d'Amis</li>
-          <li>Règles</li>
-          <li>A propos de Betabet</li>
+          <li style={styles.pointList}>Mon profil</li>
+          <li style={styles.pointList}>Liste d'Amis</li>
+          <li style={styles.pointList}>Règles</li>
+          <li style={styles.pointList}>A propos de Betabet</li>
+          <li onClick={logout} style={styles.pointList}>Déconnexion</li>
         </ul>
       </div>
 
@@ -166,8 +169,8 @@ const styles = {
   icon : {
     color: '#43F043',
   },
-  yellow: {
-
+  pointList : {
+    marginTop: '2rem'
   }
 };
 

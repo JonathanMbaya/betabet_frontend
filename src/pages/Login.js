@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate} from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import { useAuth } from '../contexts/AuthContext';
+import { toast } from 'react-toastify';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login, loading } = useAuth(); // Utilise le hook personnalisé pour accéder à la fonction login
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -15,10 +20,16 @@ const Login = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Login attempt:', formData);
-    navigate('/');
+    try {
+      await login(formData.username, formData.password); // Appelle la fonction login du contexte
+      toast.success('Connexion réussie !'); // Notification de succès
+      navigate('/'); // Redirige l'utilisateur vers la page d'accueil après la connexion
+    } catch (error) {
+      toast.error('Échec de la connexion. Veuillez vérifier vos identifiants.'); // Notification d'erreur
+      console.error('Erreur de connexion:', error);
+    }
   };
 
   return (
@@ -29,40 +40,37 @@ const Login = () => {
                 <h1 style={{color: "#6B8E23", fontSize: '60px'}}>Betabet</h1>
                 <h2 style={styles.subtitle}>Accéder à votre compte Betabet</h2>
                 <form onSubmit={handleSubmit} style={styles.form}>
-                    <div style={styles.inputGroup}>
-                        <label htmlFor="username" style={styles.label}>
-                        Pseudo
-                        </label>
-                        <input
-                        type="text"
-                        id="username"
-                        name="username"
-                        value={formData.username}
-                        onChange={handleChange}
-                        style={styles.input}
-                        required
-                        />
-                    </div>
-                    <div style={styles.inputGroup}>
-                        <label htmlFor="password" style={styles.label}>
-                        Mot de passe
-                        </label>
-                        <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        style={styles.input}
-                        required
-                        />
-                    </div>
-                    <Link to="/">
-                        <button type="submit" style={styles.button}>
-                            Connexion
-                        </button>
-                    </Link>
-
+                  <div style={styles.inputGroup}>
+                    <label htmlFor="username" style={styles.label}>
+                      Pseudo
+                    </label>
+                    <input
+                      type="text"
+                      id="username"
+                      name="username"
+                      value={formData.username}
+                      onChange={handleChange}
+                      style={styles.input}
+                      required
+                    />
+                  </div>
+                  <div style={styles.inputGroup}>
+                    <label htmlFor="password" style={styles.label}>
+                      Mot de passe
+                    </label>
+                    <input
+                      type="password"
+                      id="password"
+                      name="password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      style={styles.input}
+                      required
+                    />
+                  </div>
+                  <button type="submit" style={styles.button} disabled={loading}>
+                    {loading ? 'En cours de connexion ...' : 'Connexion'}
+                  </button>
                 </form>
 
                 <p style={styles.linkContainer}>
@@ -77,9 +85,9 @@ const Login = () => {
             </div>
 
             <ul style={styles.textDevises}>
-                <li><span style={styles.spanIncon} class="material-symbols-outlined">task_alt</span> Pariez sans risque</li>
-                <li><span style={styles.spanIncon}  class="material-symbols-outlined">task_alt</span> Partagez avec vos amis</li>
-                <li><span style={styles.spanIncon}  class="material-symbols-outlined">task_alt</span> Gagnez des prix</li>
+              <li><FontAwesomeIcon style={styles.spanIncon} icon={faCheck} /> Pariez sans risque</li>
+              <li><FontAwesomeIcon style={styles.spanIncon} icon={faCheck} /> Partagez avec vos amis</li>
+              <li><FontAwesomeIcon style={styles.spanIncon} icon={faCheck} /> Gagnez des prix</li>
             </ul>
 
         </div>

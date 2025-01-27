@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import { useAuth } from '../contexts/AuthContext'; // Ajout du hook personnalisé pour l'inscription
+import { toast } from 'react-toastify'; // Notification de succès ou d'erreur
 
 const Register = () => {
   const navigate = useNavigate();
+  const { register } = useAuth(); // Utilisation de la fonction register du contexte d'authentification
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -16,21 +21,31 @@ const Register = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Vérification que les mots de passe correspondent
     if (formData.password !== formData.confirmPassword) {
-      alert("Les mots de passe ne correspondent pas");
+      toast.error("Les mots de passe ne correspondent pas");
       return;
     }
-    console.log('Register attempt:', formData);
-    navigate('/login');
+
+    try {
+      // Appel à la fonction register pour créer un nouvel utilisateur
+      await register(formData.username, formData.password);
+      toast.success('Inscription réussie !');
+      navigate('/login'); // Redirection vers la page de connexion après l'inscription
+    } catch (error) {
+      toast.error('Échec de l\'inscription. Veuillez réessayer.');
+      console.error('Erreur d\'inscription:', error);
+    }
   };
 
   return (
     <div style={styles.container}>
       <div style={styles.boxbox}>
         <div style={styles.box}>
-          <h1 style={{ color: "#6B8E23", fontSize: '60px' }}>Betabet</h1>
+          <h1 style={{ color: '#6B8E23', fontSize: '60px' }}>Betabet</h1>
           <h2 style={styles.subtitle}>Créer un compte Betabet</h2>
           <form onSubmit={handleSubmit} style={styles.form}>
             <div style={styles.inputGroup}>
@@ -89,9 +104,18 @@ const Register = () => {
         </div>
 
         <ul style={styles.textDevises}>
-            <li><span style={styles.spanIncon} class="material-symbols-outlined">task_alt</span> Pariez sans risque</li>
-            <li><span style={styles.spanIncon}  class="material-symbols-outlined">task_alt</span> Partagez avec vos amis</li>
-            <li><span style={styles.spanIncon}  class="material-symbols-outlined">task_alt</span> Gagnez des prix</li>
+          <li>
+            <FontAwesomeIcon style={styles.spanIncon} icon={faCheck} /> Pariez
+            sans risque
+          </li>
+          <li>
+            <FontAwesomeIcon style={styles.spanIncon} icon={faCheck} /> Partagez
+            avec vos amis
+          </li>
+          <li>
+            <FontAwesomeIcon style={styles.spanIncon} icon={faCheck} /> Gagnez
+            des prix
+          </li>
         </ul>
       </div>
 
@@ -206,9 +230,9 @@ const styles = {
     justifyContent: 'center',
     borderRadius: '8px',
   },
-  spanIncon : {
-    color: "#43F043"
-  }
+  spanIncon: {
+    color: '#43F043',
+  },
 };
 
 export default Register;

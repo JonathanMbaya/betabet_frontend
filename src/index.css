@@ -8,14 +8,10 @@ body, * {
 
 /* Corps de la page */
 body {
-    background-color: #f5f5f5; /* Couleur de fond douce */
     color: #333; /* Couleur de texte par défaut */
     line-height: 1.6; /* Meilleure lisibilité */
 }
 
-h1{
-    color: #6B8E23 !important;
-}
 
 /* Liens */
 a {

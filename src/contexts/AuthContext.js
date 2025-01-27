@@ -1,85 +1,116 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from 'react';
+import axios from 'axios';
 
+// Création du contexte d'authentification
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null); // Utilisateur connecté
+  const [loading, setLoading] = useState(false); // État de chargement
 
+  // Fonction de connexion
   const login = useCallback(async (username, password) => {
     try {
       setLoading(true);
-      // Implémenter la logique de connexion avec l'API
-      const response = await fetch('http://localhost:5000/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
+      const { data } = await axios.post('http://localhost:5000/auth/login', {
+        username,
+        password,
       });
 
-      if (!response.ok) {
-        throw new Error('Échec de la connexion');
-      }
-
-      const data = await response.json();
-      setUser(data.user);
-      localStorage.setItem('token', data.access_token);
-      return data;
+      setUser(data.user); // Mise à jour de l'utilisateur connecté
+      localStorage.setItem('access_token', data.access_token); // Stockage du token
     } catch (error) {
-      console.error('Erreur de connexion:', error);
-      throw error;
+      console.error('Erreur lors de la connexion :', error.response?.data || error);
+      throw error.response?.data || error; // Propager une erreur pour l'interface utilisateur
     } finally {
       setLoading(false);
     }
   }, []);
 
-  const logout = useCallback(() => {
-    setUser(null);
-    localStorage.removeItem('token');
-  }, []);
-
-  const register = useCallback(async (userData) => {
+  // Fonction d'inscription
+  const register = useCallback(async (username, password) => {
     try {
       setLoading(true);
-      // Implémenter la logique d'inscription avec l'API
-      const response = await fetch('http://localhost:5000/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData),
+
+      const { data } = await axios.post('http://localhost:5000/auth/register', {
+        username,
+        password,
       });
 
-      if (!response.ok) {
-        throw new Error('Échec de l\'inscription');
-      }
-
-      const data = await response.json();
-      return data;
+      return data; // Retourne la réponse si succès
     } catch (error) {
-      console.error('Erreur d\'inscription:', error);
-      throw error;
+      console.error('Erreur lors de l\'inscription :', error.response?.data || error);
+      throw error.response?.data || error; // Propager une erreur pour l'interface utilisateur
     } finally {
       setLoading(false);
     }
   }, []);
 
-  const value = {
-    user,
-    loading,
-    login,
-    logout,
-    register,
-  };
+  // Fonction de déconnexion
+  const logout = useCallback(() => {
+    setUser(null); // Déconnexion de l'utilisateur
+    localStorage.removeItem('access_token'); // Suppression du token
+  }, []);
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  // Récupérer les informations utilisateur lors du montage
+  useEffect(() => {
+    const fetchUser = async () => {
+      const token = localStorage.getItem('access_token');
+
+      if (token) {
+        try {
+          setLoading(true);
+          const { data } = await axios.get('http://localhost:5000/auth/me', {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          setUser(data.user); // Mise à jour de l'utilisateur connecté
+        } catch (error) {
+          console.error(
+            'Erreur lors de la récupération des informations utilisateur :',
+            error.response?.data || error
+          );
+          localStorage.removeItem('access_token'); // Supprime le token invalide
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  // Mémoisation de la valeur du contexte
+  const contextValue = useMemo(
+    () => ({
+      user,
+      loading,
+      login,
+      register,
+      logout,
+    }),
+    [user, loading, login, register, logout]
+  );
+
+  return (
+    <AuthContext.Provider value={contextValue}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
+// Hook personnalisé pour accéder au contexte
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error('useAuth doit être utilisé dans un AuthProvider');
   }
   return context;
 };

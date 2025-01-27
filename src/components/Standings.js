@@ -141,7 +141,6 @@ const styles = {
     margin: '2rem auto',
     fontFamily: '"Arial", sans-serif',
     borderRadius: '10px',
-    backgroundColor: '#F5F5F5',
   },
   title: {
     fontSize: '28px',
@@ -199,6 +198,7 @@ const styles = {
     width: '100%',
     borderCollapse: 'collapse',
     textAlign: 'center',
+    color: 'white'
   },
   logo: {
     width: '20px',
@@ -223,11 +223,14 @@ const styles = {
   },
 
   nameTeam: {
-    maxWidth: '30px'
+    maxWidth: '30px',
+    color: 'white !important'
   },
 
   tr : {
-    borderBottom: '.5px solid gray'
+    borderBottom: '.5px solid gray',
+    color: 'white !important'
+
   }
 };
 

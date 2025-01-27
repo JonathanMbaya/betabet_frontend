@@ -13,7 +13,7 @@ function DetailsMatch() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const API_KEY = 'd73d6c9f857db59eea4511d3aa55ec9f200f581f24ba5086dc0b54a1c0dc2239';
+  const API_KEY = 'f15b39af540a6aae6db287aaad89253ecf3fc5a66c6e52866d582824a91a3e02';
 
   // Fonction pour récupérer les scores en direct
   const fetchScores = async () => {
@@ -59,6 +59,11 @@ function DetailsMatch() {
 
   return (
     <>
+      {/* Image de fond */}
+      <div style={styles.backgroundImage} />
+
+      {/* Overlay vert */}
+      <div style={styles.greenOverlay} />
       <Navbar />
       <main style={styles.container}>
         <Link to="/">
@@ -318,6 +323,26 @@ const styles = {
     alignItems: 'center',
     boxShadow: '0 -2px 5px rgba(0, 0, 0, 0.1)',
     color: 'white !important',
+  },
+  backgroundImage: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    height: '100%',
+    width: '100%',
+    backgroundImage: 'url(https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    zIndex: -2,
+  },
+  greenOverlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    height: '100%',
+    width: '100%',
+    backgroundColor: 'rgba(0, 128, 0, 0.3)', // Vert transparent
+    zIndex: -1,
   },
 };
 

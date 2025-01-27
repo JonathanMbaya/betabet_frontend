@@ -71,7 +71,6 @@ const styles = {
     maxWidth: '800px',
     fontFamily: '"Arial", sans-serif',
     borderRadius: '10px',
-    backgroundColor: '#F5F5F5',
   },
   title: {
     fontSize: '28px',
