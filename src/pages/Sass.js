@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
 import { useAuth } from '../contexts/AuthContext';
@@ -93,26 +94,28 @@ function Sass() {
         {/* Section profil joueur */}
         <div style={styles.profileSection}>
           <div style={styles.profileCard}>
-            <h2>{user.username}</h2>
-            <h3>{user.score}<span> pts</span></h3>
-            <div style={styles.profileDetails}>
-              <div style={styles.detailItem}>
-                <p>Matchs joués</p>
-                <h4>{user.match_played}</h4>
-              </div>
-              <div style={styles.detailItem}>
-                <p>Gagnés</p>
-                <h4>{user.wins}</h4>
-              </div>
-              <div style={styles.detailItem}>
-                <p>Matchs nuls</p>
-                <h4>{user.draws}</h4>
-              </div>
-              <div style={styles.detailItem}>
-                <p>Perdus</p>
-                <h4>{user.loses}</h4>
-              </div>
-            </div>
+            {user ? (
+              <>
+                <h2>{user.username}</h2>
+                <h3>{user.score}<span> pts</span></h3>
+                <div style={styles.profileDetails}>
+                  <div style={styles.detailItem}>
+                    <p>Matchs joués</p>
+                    <h4>{user.match_played}</h4>
+                  </div>
+                  <div style={styles.detailItem}>
+                    <p>Gagnés</p>
+                    <h4>{user.wins}</h4>
+                  </div>
+                  <div style={styles.detailItem}>
+                    <p>Perdus</p>
+                    <h4>{user.loses}</h4>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <p>Chargement des informations...</p>
+            )}
           </div>
         </div>
 
@@ -137,12 +140,14 @@ function Sass() {
             <ul style={styles.sectionCompet}>
               {listCompetitions.map((comp) => (
                 <li style={styles.blockCompet} key={comp.id}>
-                  <div>
-                    {comp.name} (ID: {comp.id})
-                    <p>{comp.min_participants}/{comp.max_participants} participants</p>
-                    <p>{comp.duration_days} jours restants</p>
-                    <h4>{comp.status}</h4>
-                  </div>
+                  <Link to={`/competition/${comp.id}`}>
+                    <div>
+                      {comp.name} (ID: {comp.id})
+                      <p>{comp.min_participants}/{comp.max_participants} participants</p>
+                      <p>{comp.duration_days} jours restants</p>
+                      <h4>{comp.status}</h4>
+                    </div>
+                  </Link>
                 </li>
               ))}
             </ul>

@@ -1,55 +1,61 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import axios from 'axios';
 import LoadingScreen from './components/LoadingScreen';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Friends from './pages/Friends';
-import { AuthProvider } from './contexts/AuthContext';
+import { useAuth } from './contexts/AuthContext';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import DetailsMatch from './components/DetailsMatch';
 import Sass from './pages/Sass';
-import PrivateRoute from './PrivateRoute'; // Assurez-vous que le chemin est correct
+import PrivateRoute from './PrivateRoute';
 
 function App() {
-  const [loading, setLoading] = useState(true);
+  const { loading, setUser } = useAuth();
 
   useEffect(() => {
-    const simulateLoading = async () => {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      setLoading(false);
+    const fetchUser = async () => {
+      const token = localStorage.getItem('access_token');
+      if (token) {
+        try {
+          const response = await axios.get('http://localhost:5000/auth/me', {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          setUser(response.data.user);
+        } catch (error) {
+          console.error('Erreur lors de la récupération de l\'utilisateur :', error);
+          localStorage.removeItem('access_token');
+        }
+      }
     };
 
-    simulateLoading();
-  }, []);
+    fetchUser();
+  }, [setUser]);
 
   if (loading) {
     return <LoadingScreen />;
   }
 
   return (
-    <AuthProvider>
+    <>
       <ToastContainer />
       <Router>
         <Routes>
-          {/* Routes publiques */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-
-          {/* Routes protégées */}
           <Route element={<PrivateRoute />}>
             <Route path="/" element={<Sass />} />
-            <Route path="/competition/" element={<Home />} />
+            <Route path="/competition/:id" element={<Home />} />
             <Route path="/match/:id" element={<DetailsMatch />} />
             <Route path="/friends" element={<Friends />} />
           </Route>
-
-          {/* Redirection par défaut */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
-    </AuthProvider>
+    </>
   );
 }
 

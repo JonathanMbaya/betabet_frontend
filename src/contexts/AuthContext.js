@@ -7,6 +7,7 @@ import React, {
   useMemo,
 } from 'react';
 import axios from 'axios';
+import jwtDecode from 'jwt-decode';
 
 // Création du contexte d'authentification
 const AuthContext = createContext();
@@ -23,12 +24,13 @@ export const AuthProvider = ({ children }) => {
         username,
         password,
       });
-
-      setUser(data.user); // Mise à jour de l'utilisateur connecté
-      localStorage.setItem('access_token', data.access_token); // Stockage du token
+  
+      console.log('Réponse du backend :', data); // Vérifiez la réponse
+      setUser(data.user);
+      localStorage.setItem('access_token', data.access_token);
     } catch (error) {
-      console.error('Erreur lors de la connexion :', error.response?.data || error);
-      throw error.response?.data || error; // Propager une erreur pour l'interface utilisateur
+      console.error('Erreur de connexion :', error);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -38,16 +40,22 @@ export const AuthProvider = ({ children }) => {
   const register = useCallback(async (username, password) => {
     try {
       setLoading(true);
-
       const { data } = await axios.post('http://localhost:5000/auth/register', {
         username,
         password,
       });
-
       return data; // Retourne la réponse si succès
     } catch (error) {
-      console.error('Erreur lors de l\'inscription :', error.response?.data || error);
-      throw error.response?.data || error; // Propager une erreur pour l'interface utilisateur
+      if (error.response) {
+        console.error('Erreur serveur :', error.response.data);
+        throw error.response.data;
+      } else if (error.request) {
+        console.error('Pas de réponse du serveur :', error.request);
+        throw new Error('Le serveur ne répond pas. Veuillez réessayer plus tard.');
+      } else {
+        console.error('Erreur inattendue :', error.message);
+        throw new Error('Une erreur inattendue est survenue.');
+      }
     } finally {
       setLoading(false);
     }
@@ -55,7 +63,7 @@ export const AuthProvider = ({ children }) => {
 
   // Fonction de déconnexion
   const logout = useCallback(() => {
-    setUser(null); // Déconnexion de l'utilisateur
+    // setUser(null); // Déconnexion de l'utilisateur
     localStorage.removeItem('access_token'); // Suppression du token
   }, []);
 
@@ -66,6 +74,14 @@ export const AuthProvider = ({ children }) => {
 
       if (token) {
         try {
+          const decodedToken = jwtDecode(token);
+          const currentTime = Date.now() / 1000;
+
+          if (decodedToken.exp < currentTime) {
+            localStorage.removeItem('access_token'); // Supprime le token expiré
+            return;
+          }
+
           setLoading(true);
           const { data } = await axios.get('http://localhost:5000/auth/me', {
             headers: { Authorization: `Bearer ${token}` },
@@ -91,12 +107,13 @@ export const AuthProvider = ({ children }) => {
   const contextValue = useMemo(
     () => ({
       user,
+      setUser,
       loading,
       login,
       register,
       logout,
     }),
-    [user, loading, login, register, logout]
+    [user, setUser, loading, login, register, logout]
   );
 
   return (

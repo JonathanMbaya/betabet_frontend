@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../contexts/AuthContext';
@@ -7,11 +7,12 @@ import { toast } from 'react-toastify';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login, loading } = useAuth(); // Utilise le hook personnalisé pour accéder à la fonction login
+  const { login, loading } = useAuth();
   const [formData, setFormData] = useState({
     username: '',
     password: '',
   });
+  const [error, setError] = useState(null);
 
   const handleChange = (e) => {
     setFormData({
@@ -22,81 +23,92 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
+
+    if (!formData.username || !formData.password) {
+      setError('Veuillez remplir tous les champs.');
+      return;
+    }
+
     try {
-      await login(formData.username, formData.password); // Appelle la fonction login du contexte
-      toast.success('Connexion réussie !'); // Notification de succès
-      navigate('/'); // Redirige l'utilisateur vers la page d'accueil après la connexion
+      await login(formData.username, formData.password);
+      toast.success('Connexion réussie !');
+      navigate('/');
     } catch (error) {
-      toast.error('Échec de la connexion. Veuillez vérifier vos identifiants.'); // Notification d'erreur
+      setError(error.message || 'Échec de la connexion. Veuillez vérifier vos identifiants.');
+      toast.error(error.message || 'Échec de la connexion. Veuillez vérifier vos identifiants.');
       console.error('Erreur de connexion:', error);
     }
   };
 
+  const buttonStyles = {
+    ...styles.button,
+    opacity: loading ? 0.7 : 1,
+    cursor: loading ? 'not-allowed' : 'pointer',
+  };
+
   return (
     <div style={styles.container}>
-
-        <div style={styles.boxbox}>
-            <div style={styles.box}>
-                <h1 style={{color: "#6B8E23", fontSize: '60px'}}>Betabet</h1>
-                <h2 style={styles.subtitle}>Accéder à votre compte Betabet</h2>
-                <form onSubmit={handleSubmit} style={styles.form}>
-                  <div style={styles.inputGroup}>
-                    <label htmlFor="username" style={styles.label}>
-                      Pseudo
-                    </label>
-                    <input
-                      type="text"
-                      id="username"
-                      name="username"
-                      value={formData.username}
-                      onChange={handleChange}
-                      style={styles.input}
-                      required
-                    />
-                  </div>
-                  <div style={styles.inputGroup}>
-                    <label htmlFor="password" style={styles.label}>
-                      Mot de passe
-                    </label>
-                    <input
-                      type="password"
-                      id="password"
-                      name="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      style={styles.input}
-                      required
-                    />
-                  </div>
-                  <button type="submit" style={styles.button} disabled={loading}>
-                    {loading ? 'En cours de connexion ...' : 'Connexion'}
-                  </button>
-                </form>
-
-                <p style={styles.linkContainer}>
-
-                    Pas encore de compte ?{' '}
-                    <a href="/register" style={styles.link}>
-                        S'inscrire
-                    </a>
-
-                </p>
-            
+      <div style={styles.boxbox}>
+        <div style={styles.box}>
+          <h1 style={{ color: '#6B8E23', fontSize: '60px' }}>Betabet</h1>
+          <h2 style={styles.subtitle}>Accéder à votre compte Betabet</h2>
+          <form onSubmit={handleSubmit} style={styles.form}>
+            <div style={styles.inputGroup}>
+              <label htmlFor="username" style={styles.label}>
+                Pseudo
+              </label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                style={styles.input}
+                required
+              />
             </div>
-
-            <ul style={styles.textDevises}>
-              <li><FontAwesomeIcon style={styles.spanIncon} icon={faCheck} /> Pariez sans risque</li>
-              <li><FontAwesomeIcon style={styles.spanIncon} icon={faCheck} /> Partagez avec vos amis</li>
-              <li><FontAwesomeIcon style={styles.spanIncon} icon={faCheck} /> Gagnez des prix</li>
-            </ul>
-
-        </div>
-
-        <div style={styles.devises}>
-            <div style={styles.imageDevises}>
+            <div style={styles.inputGroup}>
+              <label htmlFor="password" style={styles.label}>
+                Mot de passe
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                style={styles.input}
+                required
+              />
             </div>
+            {error && <p style={{ color: 'red', fontSize: '14px', marginTop: '10px' }}>{error}</p>}
+            <button type="submit" style={buttonStyles} disabled={loading} aria-disabled={loading}>
+              {loading ? 'En cours de connexion ...' : 'Connexion'}
+            </button>
+          </form>
+          <p style={styles.linkContainer}>
+            Pas encore de compte ?{' '}
+            <a href="/register" style={styles.link}>
+              S'inscrire
+            </a>
+          </p>
         </div>
-
+        <ul style={styles.textDevises}>
+          <li>
+            <FontAwesomeIcon style={styles.spanIncon} icon={faCheck} /> Pariez sans risque
+          </li>
+          <li>
+            <FontAwesomeIcon style={styles.spanIncon} icon={faCheck} /> Partagez avec vos amis
+          </li>
+          <li>
+            <FontAwesomeIcon style={styles.spanIncon} icon={faCheck} /> Gagnez des prix
+          </li>
+        </ul>
+      </div>
+      <div style={styles.devises}>
+        <div style={styles.imageDevises}></div>
+      </div>
     </div>
   );
 };
@@ -111,7 +123,6 @@ const styles = {
     backgroundColor: '#6B8E23',
     fontFamily: '"Josefin Sans", serif',
   },
-  
   box: {
     backgroundColor: '#fff',
     padding: '20px',
@@ -119,13 +130,11 @@ const styles = {
     boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
     textAlign: 'center',
   },
-
-  boxbox : {
+  boxbox: {
     padding: '20px',
     width: '100%',
     maxWidth: '400px',
   },
-
   title: {
     fontSize: '24px',
     marginBottom: '10px',
@@ -205,9 +214,9 @@ const styles = {
     justifyContent: 'center',
     borderRadius: '8px',
   },
-  spanIncon : {
-    color: "#43F043"
-  }
+  spanIncon: {
+    color: '#43F043',
+  },
 };
 
 export default Login;

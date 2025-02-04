@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWallet } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../contexts/AuthContext';
 
+
 const Navbar = ({ score, onProfileClick }) => {
+  const { user } = useAuth();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const {logout} = useAuth();
 
@@ -28,7 +31,7 @@ const Navbar = ({ score, onProfileClick }) => {
 
       <div style={styles.navbarWallet}>
         <div style={styles.menuButton}>
-          <span style={styles.yellow}> +13 pts <FontAwesomeIcon style={styles.icon} icon={faWallet} /></span>
+          <span style={styles.yellow}> + {user.score} pts <FontAwesomeIcon style={styles.icon} icon={faWallet} /></span>
         </div>
       </div>
 
@@ -40,14 +43,17 @@ const Navbar = ({ score, onProfileClick }) => {
         }}
       >
         <div style={styles.drawerHeader}>
-          <h2>Natesama</h2>
+          <h2>{user.username}</h2>
           <p>Débutant</p>
         </div>
         <hr style={styles.divider} />
         <ul style={styles.menuList}>
-          <li style={styles.pointList}>Mon profil</li>
+          <li style={styles.pointList}>
+            <Link to="/">
+              Mon profil
+            </Link>
+          </li>
           <li style={styles.pointList}>Liste d'Amis</li>
-          <li style={styles.pointList}>Règles</li>
           <li style={styles.pointList}>A propos de Betabet</li>
           <li onClick={logout} style={styles.pointList}>Déconnexion</li>
         </ul>
