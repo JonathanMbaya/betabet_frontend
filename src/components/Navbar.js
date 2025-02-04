@@ -31,7 +31,7 @@ const Navbar = ({ score, onProfileClick }) => {
 
       <div style={styles.navbarWallet}>
         <div style={styles.menuButton}>
-          <span style={styles.yellow}> + {user.score} pts <FontAwesomeIcon style={styles.icon} icon={faWallet} /></span>
+          <span style={styles.yellow}>{user.score} pts <FontAwesomeIcon style={styles.icon} icon={faWallet} /></span>
         </div>
       </div>
 

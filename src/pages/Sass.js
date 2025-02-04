@@ -15,6 +15,10 @@ function Sass() {
     duration_days: '',
   });
 
+  // État pour la pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6; // Nombre d'éléments par page
+
   // Ouvrir/fermer le modal
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
@@ -34,40 +38,35 @@ function Sass() {
     try {
       const response = await axios.get('http://localhost:5000/competition/mycompetition-user', {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('access_token')}`
-        }
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+        },
       });
       setListCompetitions(response.data.competitions); // Mise à jour de l'état avec les compétitions
     } catch (err) {
-    console.error('Erreur lors de la récupération des compétitions');
+      console.error('Erreur lors de la récupération des compétitions');
     }
   };
 
   // Utilisation de useEffect pour appeler getCompetitions lors du montage du composant
   useEffect(() => {
     getCompetitions();
-  }, []);
+  }, [competitions]);
 
   // Envoyer les données pour créer une nouvelle compétition
   const handleSubmit = async () => {
     try {
-      // Envoyer les données formatées au backend
       const response = await axios.post(
-        'http://localhost:5000/competition/create', // URL de l'API
-        
-          {
-            // Contenu du body de la requête
-            name: newCompetitionDetails.name,
-            min_participants: newCompetitionDetails.min_participants,
-            duration_days: newCompetitionDetails.duration_days,
-          },
-          {
-          // Configuration supplémentaire : headers pour inclure le token
+        'http://localhost:5000/competition/create',
+        {
+          name: newCompetitionDetails.name,
+          min_participants: newCompetitionDetails.min_participants,
+          duration_days: newCompetitionDetails.duration_days,
+        },
+        {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('access_token')}`,
           },
-        }, 
-
+        }
       );
       setCompetitions([...competitions, response.data.competition]); // Ajouter la compétition à la liste
       setIsModalOpen(false); // Fermer la fenêtre modale
@@ -86,6 +85,14 @@ function Sass() {
       }
     }
   };
+
+  // Calcul des éléments à afficher pour la page actuelle
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = listCompetitions.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Fonction pour changer de page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <>
@@ -131,26 +138,59 @@ function Sass() {
           </div>
         </div>
 
-        {/* Liste des compétitions */}
+        {/* Liste des compétitions avec pagination */}
         <div style={styles.section}>
           <h2>Vos compétitions</h2>
           {listCompetitions.length === 0 ? (
             <p>Aucune compétition pour le moment.</p>
           ) : (
-            <ul style={styles.sectionCompet}>
-              {listCompetitions.map((comp) => (
-                <li style={styles.blockCompet} key={comp.id}>
-                  <Link to={`/competition/${comp.id}`}>
-                    <div>
-                      {comp.name} (ID: {comp.id})
-                      <p>{comp.min_participants}/{comp.max_participants} participants</p>
-                      <p>{comp.duration_days} jours restants</p>
-                      <h4>{comp.status}</h4>
-                    </div>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <>
+              <ul style={styles.sectionCompet}>
+                {currentItems.map((comp) => (
+                  <li style={styles.blockCompet} key={comp.id}>
+                    <Link to={`/competition/${comp.id}`}>
+                      <div>
+                        {comp.name} (ID: {comp.id})
+                        <p>{comp.min_participants}/{comp.max_participants} participants</p>
+                        <p>{comp.duration_days} jours restants</p>
+                        <h4>{comp.status}</h4>
+                      </div>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+
+              {/* Contrôles de pagination */}
+              <div style={styles.pagination}>
+                <button
+                  onClick={() => paginate(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  style={styles.paginationButton}
+                >
+                  Précédent
+                </button>
+                {Array.from({ length: Math.ceil(listCompetitions.length / itemsPerPage) }, (_, i) => (
+                  <button
+                    key={i + 1}
+                    onClick={() => paginate(i + 1)}
+                    style={{
+                      ...styles.paginationButton,
+                      backgroundColor: currentPage === i + 1 ? '#007bff' : '#f8f9fa',
+                      color: currentPage === i + 1 ? '#fff' : '#000',
+                    }}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+                <button
+                  onClick={() => paginate(currentPage + 1)}
+                  disabled={currentPage === Math.ceil(listCompetitions.length / itemsPerPage)}
+                  style={styles.paginationButton}
+                >
+                  Suivant
+                </button>
+              </div>
+            </>
           )}
         </div>
 
@@ -302,6 +342,20 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     marginTop: '20px',
+  },
+  pagination: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: '20px',
+  },
+  paginationButton: {
+    padding: '10px 15px',
+    margin: '0 5px',
+    border: 'none',
+    borderRadius: '5px',
+    backgroundColor: '#f8f9fa',
+    cursor: 'pointer',
   },
 };
 
