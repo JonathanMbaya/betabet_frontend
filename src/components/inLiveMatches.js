@@ -3,7 +3,7 @@ import axios from 'axios';
 import MatchCard from './MatchCard';
 
 function InLiveMatches() {
-  const API_KEY = 'd73d6c9f857db59eea4511d3aa55ec9f200f581f24ba5086dc0b54a1c0dc2239';
+  const API_KEY = 'fa25d2130d305098ca63d7db5a3f825399d58f47bd53b01553b0907f23fc4421';
   const [liveMatches, setLiveMatches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -75,7 +75,7 @@ const styles = {
   title: {
     fontSize: '28px',
     textAlign: 'center',
-    color: '#333',
+    color: 'white',
     marginBottom: '20px',
     fontWeight: 'bold',
   },
@@ -87,7 +87,7 @@ const styles = {
   noMatches: {
     textAlign: 'center',
     fontSize: '18px',
-    color: '#666',
+    color: 'white',
   },
 };
 

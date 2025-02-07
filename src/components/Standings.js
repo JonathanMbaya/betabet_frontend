@@ -8,9 +8,7 @@ const Standings = () => {
   const [selectedLeague, setSelectedLeague] = useState(null);
 
   const leagues = {
-    uefaEuropaLeague: 4,
     uefaChampionsLeague: 3,
-    worldCup: 8,
     premierLeague: 152,
     laLiga: 302,
     serieA: 207,
@@ -30,7 +28,7 @@ const Standings = () => {
     setError(null);
     setStandings([]);
     try {
-      const API_ALL_SPORT_DATA = process.env.REACT_APP_API_ALL_SPORT_DATA;
+      const API_ALL_SPORT_DATA = "fa25d2130d305098ca63d7db5a3f825399d58f47bd53b01553b0907f23fc4421";
       const response = await axios.get(
         `https://apiv2.allsportsapi.com/football/?met=Standings&leagueId=${leagueId}&APIkey=${API_ALL_SPORT_DATA}`
       );
@@ -145,7 +143,7 @@ const styles = {
   title: {
     fontSize: '28px',
     textAlign: 'center',
-    color: '#333',
+    color: 'white',
     marginBottom: '20px',
     fontWeight: 'bold',
   },
@@ -219,7 +217,7 @@ const styles = {
   message: {
     textAlign: 'center',
     fontSize: '18px',
-    color: '#666',
+    color: 'white',
   },
 
   nameTeam: {

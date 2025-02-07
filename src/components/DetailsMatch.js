@@ -13,7 +13,7 @@ function DetailsMatch() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const API_KEY = 'f15b39af540a6aae6db287aaad89253ecf3fc5a66c6e52866d582824a91a3e02';
+  const API_KEY = 'fa25d2130d305098ca63d7db5a3f825399d58f47bd53b01553b0907f23fc4421';
 
   // Fonction pour récupérer les scores en direct
   const fetchScores = async () => {
